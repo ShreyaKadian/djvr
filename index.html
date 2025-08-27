@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <title>DJ Setup</title>
+</head>
+<body>
+    <a-scene>
+        <a-sky color="black"></a-sky>
+        <a-plane src="floor.jpeg" position="10 0 10" height="100" width="100" rotation="-90 0 0"></a-plane>
+
+        <a-box color="black" position="0 5 -14.5" height="0.45" width="1.5" depth="0.7"></a-box>
+        <a-box color="grey" position="0 4.5 -15" height="4" width="4" depth="0.15" rotation="-90 0 0"></a-box>
+        <a-box id="lift" color="grey" position="-3 0 -14" height="2" width="2" depth="0.05" rotation="-90 0 0"></a-box>
+
+        <a-assets>
+            <a-asset-item id="turn" src="turn_table.glb"></a-asset-item>
+            <a-asset-item id="disco" src="disco_ball.glb"></a-asset-item>
+            <a-asset-item id="man" src="businessman_-_game-ready.glb"></a-asset-item>
+            <a-asset-item id="girl" src="girl.glb"></a-asset-item>
+            <a-asset-item id="old" src="oldman_ernest.glb"></a-asset-item>
+
+            <audio id="track1" src="Drake - God's Plan.mp3"></audio>
+            <audio id="track2" src="Drake Gods Plan slowed bass boosted AMV.mp3"></audio>
+            <audio id="track3" src="Drake - God's Plan (Very High Pitched).mp3"></audio>
+        </a-assets>
+
+        <a-entity gltf-model="#turn" position="0 5.3 -14.5" rotation="0 180 0" scale="0.18 0.5 0.3"></a-entity>
+
+        <a-entity gltf-model="#man" position="0 0.2 -1" rotation="0 180 0" scale="1 1 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+        <a-entity gltf-model="#girl" position="1 1 -1" rotation="0 180 0" scale="1 0.6 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+        <a-entity gltf-model="#old" position="-1 0.2 -1" rotation="0 180 0" scale="1 1 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+
+        <a-entity gltf-model="#man" position="1 0.2 -3" rotation="0 180 0" scale="1 1 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+        <a-entity gltf-model="#girl" position="-1 1 -3" rotation="0 180 0" scale="1 0.6 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+        <a-entity gltf-model="#old" position="0 0.2 -3" rotation="0 180 0" scale="1 1 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+
+        <a-entity gltf-model="#man" position="-1 0.2 -5" rotation="0 180 0" scale="1 1 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+        <a-entity gltf-model="#girl" position="0 1 -5" rotation="0 180 0" scale="1 0.6 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+        <a-entity gltf-model="#old" position="1 0.2 -5" rotation="0 180 0" scale="1 1 1"
+            animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
+
+        <a-cylinder id="leftPlatter" position="-0.6 5.4 -14.5" radius="0.15" height="0.2"
+            material="opacity:0; transparent:true" class="clickable"></a-cylinder>
+        <a-cylinder id="rightPlatter" position="0.55 5.4 -14.5" radius="0.15" height="0.2"
+            material="opacity:0; transparent:true" class="clickable"></a-cylinder>
+
+        <a-plane color="grey" position="0 12 0" height="2" width="2" rotation="90 0 0"
+            material="side: double;"></a-plane>
+        <a-entity gltf-model="#disco" position="0 10 0" scale="1 1 1"
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 2000"></a-entity>
+
+        <a-camera id="me" position="0 1.6 3">
+            <a-cursor color="white"></a-cursor>
+        </a-camera>
+    </a-scene>
+
+    <script>
+        let cam = document.querySelector('#me');
+        let lift = document.querySelector('#lift');
+
+        setInterval(() => {
+            let pos = cam.getAttribute('position');
+            console.log("Camera position:", pos);
+
+            if (pos.x >= -4 && pos.x <= -2 && pos.z >= -15 && pos.z <= -13) {
+                let newPos = `${pos.x} 6 ${pos.z - 1.5}`;
+                let nPos = `${pos.x} 4.7 ${pos.z - 1.5}`;
+                cam.setAttribute("position", newPos);
+                lift.setAttribute("position", nPos);
+            }
+        }, 2000);
+
+        const tracks = [
+            document.querySelector('#track1'),
+            document.querySelector('#track2'),
+            document.querySelector('#track3')
+        ];
+
+        let currentTrack = -1; 
+        let direction = 1;     
+        let isDancing = false;  
+
+        const dancers = document.querySelectorAll('[animation__dance]');
+
+        function playTrack(index) {
+            if (currentTrack >= 0) {
+                tracks[currentTrack].pause();
+                tracks[currentTrack].currentTime = 0;
+            }
+
+            currentTrack = (index + tracks.length) % tracks.length;
+
+            if (currentTrack === 0) {
+                tracks[currentTrack].currentTime = 120; 
+            }
+
+            tracks[currentTrack].play();
+
+            if (!isDancing) {
+                isDancing = true;
+                dancers.forEach(d => {
+                    d.setAttribute("animation__dance", {
+                        paused: false
+                    });
+                });
+            }
+
+            direction *= -1;
+
+            dancers.forEach(d => {
+                let toValue = direction === 1 ? "0 360 0" : "0 -360 0";
+                d.setAttribute("animation__dance", {
+                    property: "rotation",
+                    to: toValue,
+                    loop: true,
+                    dur: 2000,
+                    easing: "linear",
+                    paused: false
+                });
+            });
+        }
+
+        function stopAllAnimations() {
+            dancers.forEach(d => {
+                d.setAttribute("animation__dance", { paused: true });
+            });
+        }
+
+        document.querySelector('#leftPlatter').addEventListener('click', () => {
+            playTrack(currentTrack - 1);
+        });
+
+        document.querySelector('#rightPlatter').addEventListener('click', () => {
+            playTrack(currentTrack + 1);
+        });
+
+        stopAllAnimations();
+    </script>
+</body>
+</html>
