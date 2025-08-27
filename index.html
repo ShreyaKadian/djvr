@@ -9,18 +9,15 @@
         <a-sky color="black"></a-sky>
         <a-plane src="floor.jpeg" position="10 0 10" height="100" width="100" rotation="-90 0 0"></a-plane>
 
-        <!-- Instruction Plane -->
         <a-plane position="10 5 -10" height="10" width="10" color="black" rotation="0 0 0" material="side: double;">
             <a-text value="Click left turntable for previous track\nClick right turntable for next track when on dj booth\nStand on the grey plane lift to go to the dj booth" 
                     align="center" color="white" width="8" position="0 0 0.1" wrap-count="30"></a-text>
         </a-plane>
 
-        <!-- DJ Booth -->
         <a-box color="black" position="0 5 -14.5" height="0.45" width="1.5" depth="0.7"></a-box>
         <a-box color="grey" position="0 4.5 -15" height="4" width="4" depth="0.15" rotation="-90 0 0"></a-box>
         <a-box id="lift" color="grey" position="-3 0 -14" height="2" width="2" depth="0.05" rotation="-90 0 0"></a-box>
 
-        <!-- Assets -->
         <a-assets>
             <a-asset-item id="turn" src="turn_table.glb"></a-asset-item>
             <a-asset-item id="disco" src="disco_ball.glb"></a-asset-item>
@@ -35,7 +32,6 @@
 
         <a-entity gltf-model="#turn" position="0 5.3 -14.5" rotation="0 180 0" scale="0.18 0.5 0.3"></a-entity>
 
-        <!-- Characters with rotation animation, initially paused -->
         <a-entity gltf-model="#man" position="0 0.2 -1" rotation="0 180 0" scale="1 1 1"
             animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
         <a-entity gltf-model="#girl" position="1 1 -1" rotation="0 180 0" scale="1 0.6 1"
@@ -57,19 +53,16 @@
         <a-entity gltf-model="#old" position="1 0.2 -5" rotation="0 180 0" scale="1 1 1"
             animation__dance="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear; paused: true"></a-entity>
 
-        <!-- Clickable platters -->
         <a-cylinder id="leftPlatter" position="-0.6 5.4 -14.5" radius="0.15" height="0.2"
             material="opacity:0; transparent:true" class="clickable"></a-cylinder>
         <a-cylinder id="rightPlatter" position="0.55 5.4 -14.5" radius="0.15" height="0.2"
             material="opacity:0; transparent:true" class="clickable"></a-cylinder>
 
-        <!-- Disco ball -->
         <a-plane color="grey" position="0 12 0" height="2" width="2" rotation="90 0 0"
             material="side: double;"></a-plane>
         <a-entity gltf-model="#disco" position="0 10 0" scale="1 1 1"
             animation="property: rotation; to: 0 360 0; loop: true; dur: 2000"></a-entity>
 
-        <!-- Camera -->
         <a-camera id="me" position="0 1.6 3">
             <a-cursor color="white"></a-cursor>
         </a-camera>
@@ -79,7 +72,6 @@
         let cam = document.querySelector('#me');
         let lift = document.querySelector('#lift');
 
-        // Lift movement
         setInterval(() => {
             let pos = cam.getAttribute('position');
             console.log("Camera position:", pos);
@@ -98,32 +90,26 @@
             document.querySelector('#track3')
         ];
 
-        let currentTrack = -1; // Start with no track
-        let direction = 1;     // 1 = clockwise, -1 = counterclockwise
-        let isDancing = false;  // Track if dancing has started
+        let currentTrack = -1; 
+        let direction = 1;     
+        let isDancing = false; 
 
-        // Collect all dancers
         const dancers = document.querySelectorAll('[animation__dance]');
 
         function playTrack(index) {
-            // Stop current track if any
             if (currentTrack >= 0) {
                 tracks[currentTrack].pause();
                 tracks[currentTrack].currentTime = 0;
             }
 
-            // Wrap index
             currentTrack = (index + tracks.length) % tracks.length;
 
-            // Set start time for "God's Plan" (track1)
             if (currentTrack === 0) {
-                tracks[currentTrack].currentTime = 120; // Start at 2 minutes
+                tracks[currentTrack].currentTime = 120; 
             }
 
-            // Play new track
             tracks[currentTrack].play();
 
-            // Start dancing only on first track play
             if (!isDancing) {
                 isDancing = true;
                 dancers.forEach(d => {
@@ -133,10 +119,8 @@
                 });
             }
 
-            // Toggle dance direction
             direction *= -1;
 
-            // Update rotation direction for all dancers
             dancers.forEach(d => {
                 let toValue = direction === 1 ? "0 360 0" : "0 -360 0";
                 d.setAttribute("animation__dance", {
@@ -156,17 +140,14 @@
             });
         }
 
-        // Left platter = previous track
         document.querySelector('#leftPlatter').addEventListener('click', () => {
             playTrack(currentTrack - 1);
         });
 
-        // Right platter = next track
         document.querySelector('#rightPlatter').addEventListener('click', () => {
             playTrack(currentTrack + 1);
         });
 
-        // Initialize animations as paused
         stopAllAnimations();
     </script>
 </body>
